@@ -1,18 +1,29 @@
 # Lisbon
 
-To start your Phoenix server:
+An app to showcase full start to end production-ready deployment of the phoenix app.
+The app itself can be anything that needs a database, ecto schema and some business logic.
+The core purpose for this project is to learn how to deploy the app without any 3rd party tooling (like fly.io).
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## First stage (single server instance)
+- [ ] Orchestrated docker-compose file with database, phoenix app and nginx config
+- [ ] Circle CI AND GithubActions config that will build and run tests for our app, do zero-down deploy
+- [ ] A livebook showcase on how to debug production-issues without ssh
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+# Second stage (multiple instances)
+- [ ] Introduce second VPS and do load-balancing
+- [ ] Replicate the database
+- [ ] Introduce CloudFlare and accept only proxied requests from there
 
-## Learn more
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+# Third stage (authentication use-case)
+
+
+By this stage, we need to have fault-tolerant app that auto-depoloys on-commit, has a reliable postgres connection pulls 
+
+- [ ] Authentication via different providers:
+  - [ ] Email
+  - [ ] Google Auth
+  - [ ] SSO
+  - [ ] 2FA
+
