@@ -35,3 +35,6 @@ lisbon-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# User defined
+/.env
+/cert

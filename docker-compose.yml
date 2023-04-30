@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  # TODO Configure nginx to redirect requests
+  db:
+    image: postgres:14.6-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB=lisbon_prod
+    ports:
+    # - HOST:CONTAINER
+      - 5433:5432
+    expose:
+      - 5432
+    volumes: 
+      - db:/var/lib/postgresql/data
+    env_file:
+      - .env
+  lisbon:
+      image: dimamik/lisbon
+      container_name: lisbon
+      restart: always
+      ports: 
+        - 80:80
+        - 443:443
+      depends_on:
+        - db
+      env_file:
+        - .env
+      volumes:
+        - ${HOST_CERT_FOLDER}:/cert
+  watchtower:
+    # This will watch for new images arrived, and if found some, it will pull them and restart the container
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 lisbon
+      
+volumes:
+  db:
+    driver: local

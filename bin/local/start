@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [ "$(basename "$(pwd)")" != "lisbon" ]; then
+  echo "Error: Current directory is not ./lisbon"
+  exit 1
+fi
+
+# Start the database if it's not already running on port 5432
+# TODO
+
+
+# TODO Convert this to mix alias
+mix ecto.migrate
+iex -S mix phx.server
