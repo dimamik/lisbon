@@ -1,16 +1,6 @@
-# Find eligible builder and runner images on Docker Hub. We use Ubuntu/Debian
-# instead of Alpine to avoid DNS resolution issues in production.
-#
-# https://hub.docker.com/r/hexpm/elixir/tags?page=1&name=ubuntu
-# https://hub.docker.com/_/ubuntu?tab=tags
-#
-# This file is based on these images:
-#
-#   - https://hub.docker.com/r/hexpm/elixir/tags - for the build image
-#   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20221004-slim - for the release image
-#   - https://pkgs.org/ - resource for finding needed packages
-#   - Ex: hexpm/elixir:1.14.2-erlang-25.2-debian-bullseye-20221004-slim
-#
+# Intended to be built on CI/CD pipeline. 
+# Builds and starts mix release, which can later on be run on the destination server.
+# The CI runner architecture must be the same as the destination server architecture that will run this container.
 ARG ELIXIR_VERSION=1.14.2
 ARG OTP_VERSION=25.2
 ARG DEBIAN_VERSION=bullseye-20221004-slim
@@ -83,10 +73,13 @@ RUN chown nobody /app
 # set runner ENV
 ENV MIX_ENV="prod"
 
-# We've produced an artifact in there, we need to somehow distribute it to our VPS
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/lisbon ./
 
+# This is needed to grant execute permissions for generated script
+# Not sure if that this is a bug or indended behavior
+RUN chmod +x /app/bin/start
+
 USER nobody
 
-CMD ["/app/bin/server"]
+CMD ["/app/bin/start", ""]
