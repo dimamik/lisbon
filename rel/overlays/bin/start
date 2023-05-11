@@ -1,15 +1,17 @@
 #!/bin/sh
 
 # Preparation
-set -e
+# set -e
 cd -P -- "$(dirname -- "$0")"
 
 # Migrate the database
-./lisbon eval Lisbon.Release.migrate
+# ./lisbon eval Lisbon.Release.migrate
 
 # A place for additional tasks
 # ...
 
 # Start the server
 PHX_SERVER=true exec ./lisbon start
+
+# wait till container is killed
 

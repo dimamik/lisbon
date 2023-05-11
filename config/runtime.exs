@@ -52,15 +52,8 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :lisbon, LisbonWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
-    http: [
-      # Enable IPv6 and bind on all interfaces.
-      # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
-      # See the documentation on https://hexdocs.pm/plug_cowboy/Plug.Cowboy.html
-      # for details about using IPv6 vs IPv4 and loopback vs public addresses.
-      ip: {0, 0, 0, 0, 0, 0, 0, 0},
-      port: port
-    ],
+    url: [host: host, port: port, scheme: "http"],
+    http: [port: port],
     secret_key_base: secret_key_base
 
   # ## SSL Support
@@ -68,13 +61,16 @@ if config_env() == :prod do
   # To get SSL working, you will need to add the `https` key
   # to your endpoint configuration:
   #
-  config :lisbon, LisbonWeb.Endpoint,
-    https: [
-      port: 443,
-      cipher_suite: :strong,
-      keyfile: System.get_env("LISBON_SSL_KEY_PATH"),
-      certfile: System.get_env("LISBON_SSL_CERT_PATH")
-    ]
+  # config :lisbon, LisbonWeb.Endpoint,
+  #  https: [
+  #    port: 443,
+  #    cipher_suite: :strong,
+  #    keyfile: System.get_env("LISBON_SSL_KEY_PATH"),
+  #    certfile: System.get_env("LISBON_SSL_CERT_PATH")
+  #  ]
+
+  IO.inspect(Node.self())
+  IO.inspect(Node.get_cookie())
 
   #
   # The `cipher_suite` is set to `:strong` to support only the

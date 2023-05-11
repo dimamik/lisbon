@@ -82,4 +82,4 @@ RUN chmod +x /app/bin/start
 
 USER nobody
 
-CMD ["/app/bin/start", ""]
+CMD ["/app/bin/start"]

@@ -8,31 +8,63 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB=lisbon_prod
-    ports:
-      - 5433:5432
-    volumes: 
+    expose:
+      - 5432
+    volumes:
       - db:/var/lib/postgresql/data
   lisbon:
-      image: dimamik/lisbon_${SYSTEM_VERSION}
-      container_name: lisbon
-      restart: always
-      ports: 
-        # I'm not sure if this is needed as we're forcing HTTPS connections
-        - 80:80
-        - 443:443
-      depends_on:
-        - db
-      volumes:
-        - ${HOST_CERT_FOLDER}:/app/cert
-      env_file:
-        - .env
+    image: dimamik/lisbon
+    container_name: lisbon
+    restart: always
+    networks:
+      - default
+      - elixir_cluster_network
+    depends_on:
+      - db
+    expose:
+      - 4000
+    env_file:
+      - .env
+  livebook:
+    image: ghcr.io/livebook-dev/livebook:latest
+    container_name: livebook
+    restart: always
+    volumes:
+      - livebook:/var/lib/livebook
+    ports:
+      - 8080:8080
+      - 8081:8081
+    expose:
+      - 8080
+      - 8081
+    environment:
+      - LIVEBOOK_BASE_URL_PATH=/livebook
+    networks:
+      - default
+      - elixir_cluster_network
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - lisbon
+      - livebook
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 3600 lisbon
-      
+
 volumes:
   db:
     driver: local
+  # TODO This one is probably not needed
+  livebook:
+    driver: local
+
+networks:
+  elixir_cluster_network:
+    name: elixir-cluster-network
