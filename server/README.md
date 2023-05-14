@@ -13,5 +13,25 @@
     docker-compose ps
     ```
 
+## Helpful docker commands
+
+- To delete all containers including its volumes use,
+    ```bash
+    docker rm -vf $(docker ps -aq)
+    ```
+- To delete all the images,
+    ```bash
+    docker rmi -f $(docker images -aq)
+    ```
+
+- docker run --network host ghcr.io/livebook-dev/livebook
+
+## TODOs
+
+- Set up nginx proxy to serve domain/livebook to the running livebook instance
+- And domain/* to the phoenix instance
+- Also, we need to check & verify ssl via nginx (which should be inside the container itself)
+
+
 
 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Preparation
+# Initial setup
 set -e
 cd -P -- "$(dirname -- "$0")"
 
@@ -12,4 +12,3 @@ cd -P -- "$(dirname -- "$0")"
 
 # Start the server
 PHX_SERVER=true exec ./lisbon start
-

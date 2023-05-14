@@ -1,6 +1,20 @@
 version: '3.8'
 services:
-  db:
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-manager
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+    networks:
+      - default
+      - lisbon_network
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+  postgres:
     image: postgres:14.6-alpine
     container_name: postgres
     restart: always
@@ -9,30 +23,53 @@ services:
       - POSTGRES_PASSWORD
       - POSTGRES_DB=lisbon_prod
     ports:
-      - 5433:5432
-    volumes: 
+      - 5432:5432
+    networks:
+      - default
+      - lisbon_network
+    expose:
+      - 5432
+    volumes:
       - db:/var/lib/postgresql/data
   lisbon:
-      image: dimamik/lisbon_${SYSTEM_VERSION}
-      container_name: lisbon
-      restart: always
-      ports: 
-        # I'm not sure if this is needed as we're forcing HTTPS connections
-        - 80:80
-        - 443:443
-      depends_on:
-        - db
-      volumes:
-        - ${HOST_CERT_FOLDER}:/app/cert
-      env_file:
-        - .env
+    image: dimamik/lisbon${SYSTEM_TAG}
+    container_name: lisbon
+    restart: always
+    networks:
+      - lisbon_network
+    expose:
+      - 4000
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+  livebook:
+    image: ghcr.io/livebook-dev/livebook:latest
+    container_name: livebook
+    restart: always
+    environment:
+      - LIVEBOOK_DEFAULT_RUNTIME
+      - LIVEBOOK_PASSWORD
+    volumes:
+      - livebook:/var/lib/livebook
+    networks:
+      - lisbon_network
+    expose:
+      - 8080
+      - 8081
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 3600 lisbon
-      
+
 volumes:
   db:
     driver: local
+  livebook:
+    driver: local
+
+networks:
+  lisbon_network:
+    name: lisbon_network

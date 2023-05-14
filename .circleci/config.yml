@@ -61,6 +61,7 @@ jobs:
       - image: docker:stable
     auth:
       username: dimamik
+      # TODO This password setting is not working
       password: $DOCKERHUB_ACCESS_TOKEN
     steps:
       - checkout
@@ -100,10 +101,10 @@ workflows:
   version: 2
   test-deploy:
     jobs:
-      # - test
+      - test
       - deploy:
-          # requires:
-          #   - test
+          requires:
+            - test
           filters:
             branches:
               only: main

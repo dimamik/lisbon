@@ -10,10 +10,7 @@ import Config
 # which you should run after static files are built and
 # before starting your production server.
 config :lisbon, LisbonWeb.Endpoint,
-  http: [port: {:system, "PORT"}],
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
   check_origin: false,
-  url: [host: System.get_env("PHX_HOST")],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Configures Swoosh API Client
