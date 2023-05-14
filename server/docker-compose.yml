@@ -1,6 +1,20 @@
 version: '3.8'
 services:
-  db:
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-manager
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+    networks:
+      - default
+      - lisbon_network
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+  postgres:
     image: postgres:14.6-alpine
     container_name: postgres
     restart: always
@@ -8,49 +22,41 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB=lisbon_prod
+    ports:
+      - 5432:5432
+    networks:
+      - default
+      - lisbon_network
     expose:
       - 5432
     volumes:
       - db:/var/lib/postgresql/data
   lisbon:
-    image: dimamik/lisbon
+    image: dimamik/lisbon${SYSTEM_TAG}
     container_name: lisbon
     restart: always
     networks:
-      - default
-      - elixir_cluster_network
-    depends_on:
-      - db
+      - lisbon_network
     expose:
       - 4000
+    depends_on:
+      - postgres
     env_file:
       - .env
   livebook:
     image: ghcr.io/livebook-dev/livebook:latest
     container_name: livebook
     restart: always
+    environment:
+      - LIVEBOOK_DEFAULT_RUNTIME
+      - LIVEBOOK_PASSWORD
     volumes:
       - livebook:/var/lib/livebook
-    ports:
-      - 8080:8080
-      - 8081:8081
+    networks:
+      - lisbon_network
     expose:
       - 8080
       - 8081
-    environment:
-      - LIVEBOOK_BASE_URL_PATH=/livebook
-    networks:
-      - default
-      - elixir_cluster_network
-  nginx:
-    container_name: nginx
-    build: ./nginx
-    ports:
-      - 80:80
-      - 443:443
-    depends_on:
-      - lisbon
-      - livebook
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
@@ -61,10 +67,9 @@ services:
 volumes:
   db:
     driver: local
-  # TODO This one is probably not needed
   livebook:
     driver: local
 
 networks:
-  elixir_cluster_network:
-    name: elixir-cluster-network
+  lisbon_network:
+    name: lisbon_network

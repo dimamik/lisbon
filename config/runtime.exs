@@ -69,9 +69,6 @@ if config_env() == :prod do
   #    certfile: System.get_env("LISBON_SSL_CERT_PATH")
   #  ]
 
-  IO.inspect(Node.self())
-  IO.inspect(Node.get_cookie())
-
   #
   # The `cipher_suite` is set to `:strong` to support only the
   # latest and more secure SSL ciphers. This means old browsers
