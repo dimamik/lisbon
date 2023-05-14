@@ -28,6 +28,3 @@
 
 ## TODOs
 
-- Set up nginx proxy to serve domain/livebook to the running livebook instance
-- And domain/* to the phoenix instance
-- Also, we need to check & verify ssl via nginx (which should be inside the container itself)

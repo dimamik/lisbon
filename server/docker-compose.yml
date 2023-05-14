@@ -1,19 +1,5 @@
 version: '3.8'
 services:
-  nginx:
-    image: 'jc21/nginx-proxy-manager:latest'
-    container_name: nginx-manager
-    restart: unless-stopped
-    ports:
-      - 80:80
-      - 81:81
-      - 443:443
-    networks:
-      - default
-      - lisbon_network
-    volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
   postgres:
     image: postgres:14.6-alpine
     container_name: postgres
@@ -26,7 +12,7 @@ services:
       - 5432:5432
     networks:
       - default
-      - lisbon_network
+      - nginx_network
     expose:
       - 5432
     volumes:
@@ -36,7 +22,7 @@ services:
     container_name: lisbon
     restart: always
     networks:
-      - lisbon_network
+      - nginx_network
     expose:
       - 4000
     depends_on:
@@ -53,7 +39,7 @@ services:
     volumes:
       - livebook:/var/lib/livebook
     networks:
-      - lisbon_network
+      - nginx_network
     expose:
       - 8080
       - 8081
@@ -71,5 +57,5 @@ volumes:
     driver: local
 
 networks:
-  lisbon_network:
-    name: lisbon_network
+  nginx_network:
+    name: nginx_network
