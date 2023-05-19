@@ -6,7 +6,7 @@
 2. Run `cp .env-example .env` & set missing env variables
 3. From the `./server` directory:
     ```bash
-    $server: docker-compose --env-file .env up -d
+    docker-compose up -d
     ```
 4. Check the health of docker-compose container via:
     ```bash
@@ -23,8 +23,4 @@
     ```bash
     docker rmi -f $(docker images -aq)
     ```
-
-- docker run --network host ghcr.io/livebook-dev/livebook
-
-## TODOs
 
